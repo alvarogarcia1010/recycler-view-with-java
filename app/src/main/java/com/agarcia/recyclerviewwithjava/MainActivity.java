@@ -2,6 +2,8 @@ package com.agarcia.recyclerviewwithjava;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 
 import com.agarcia.recyclerviewwithjava.Models.Pokemon;
@@ -20,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Pokeapi";
     private Retrofit retrofit;
+    private RecyclerView recycler;
+    private PokeAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,12 @@ public class MainActivity extends AppCompatActivity {
                     .baseUrl("https://pokeapi.co/api/v2/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
+
+        recycler = findViewById(R.id.rv_pokemon_list);
+        adapter = new PokeAdapter(this);
+        recycler.setAdapter(adapter);
+        recycler.setHasFixedSize(true);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
 
         getDatos();
     }
@@ -42,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<PokemonList> call, Response<PokemonList> response) {
                 if(response.isSuccessful())
                 {
-                    PokemonList list = response.body();
-                    ArrayList<Pokemon> pokemons = list.getResult();
+                    PokemonList lista = response.body();
+                    ArrayList<Pokemon> listaPokemon = lista.getResult();
+
+                    adapter.adicionarListaPokemon(listaPokemon);
                 }
                 else
                 {
