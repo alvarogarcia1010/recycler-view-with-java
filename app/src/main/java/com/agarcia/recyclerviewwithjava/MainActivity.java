@@ -21,8 +21,8 @@ public class MainActivity extends AppCompatActivity implements Callback<PokemonR
 
     private static final String TAG = "Pokeapi";
     private ArrayList<Pokemon> pokemonsList;
-    private RecyclerView recycler;
-    private PokedexAdapter adapter;
+    private RecyclerView mRecyclerView;
+    private PokedexAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,17 +31,18 @@ public class MainActivity extends AppCompatActivity implements Callback<PokemonR
 
         pokemonsList = new ArrayList<>();
 
-        recycler = findViewById(R.id.rv_pokemon_list);
+        //Configurando Recycler View
+        mRecyclerView = findViewById(R.id.rv_pokemon_list);
+        mRecyclerView.setHasFixedSize(true);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
 
-        recycler.setLayoutManager(linearLayoutManager);
+        mAdapter = new PokedexAdapter(pokemonsList, R.layout.poke_item, this);
+        mRecyclerView.setAdapter(mAdapter);
 
-        adapter = new PokedexAdapter(pokemonsList, R.layout.poke_item, this);
-        recycler.setAdapter(adapter);
-        //recycler.setHasFixedSize(true);
-
+        //Request
         Call<PokemonResponse> call = ApiAdapter.getApiService().getPokemons();
         call.enqueue(this);
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements Callback<PokemonR
 
             pokemonsList = pokemons.getResults();
 
-            adapter.addPokemon(pokemonsList);
+            mAdapter.addPokemon(pokemonsList);
 
             Log.d(TAG, "Tamaño de la lista " + pokemonsList.size());
         }
